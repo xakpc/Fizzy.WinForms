@@ -63,4 +63,15 @@
     </EmbeddedResource>
   </ItemGroup>
 
+  <!-- Auto-zip after publish -->
+  <Target Name="ZipPublishOutput" AfterTargets="Publish">
+    <PropertyGroup>
+      <ZipFileName>Fizzy-v$(Version)-$(RuntimeIdentifier).zip</ZipFileName>
+      <ZipFilePath>$(PublishDir)..\$(ZipFileName)</ZipFilePath>
+    </PropertyGroup>
+    <Delete Files="$(ZipFilePath)" Condition="Exists('$(ZipFilePath)')" />
+    <ZipDirectory SourceDirectory="$(PublishDir)" DestinationFile="$(ZipFilePath)" />
+    <Message Importance="high" Text="Created: $(ZipFilePath)" />
+  </Target>
+
 </Project>
