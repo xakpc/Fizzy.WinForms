@@ -66,5 +66,98 @@ namespace Xakpc.Fizzy.WinForms
             DockerHelper.UpdateContainer();
             await StartContainerAsync();
         }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+            var dockerVersion = DockerHelper.GetImageVersion();
+            var aboutText = $"""
+                Fizzy WinForms v{version?.ToString(3) ?? "1.0.0"}
+
+                A Windows Forms wrapper for the Fizzy Docker container.
+
+                Docker Image: ghcr.io/xakpc/fizzy-win-local
+                Docker Version: {dockerVersion}
+
+                Links:
+                • GitHub: github.com/xakpc/Fizzy.WinForms
+                • Docker Image: github.com/xakpc/fizzy-win-local
+
+                Author: Pavel Osadchuk
+                License: MIT
+                """;
+
+            MessageBox.Show(
+                this,
+                aboutText,
+                "About Fizzy",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
+        }
+
+        private void addToProgramsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var startMenuPath = Environment.GetFolderPath(Environment.SpecialFolder.StartMenu);
+                var programsPath = Path.Combine(startMenuPath, "Programs");
+                var shortcutPath = Path.Combine(programsPath, "Fizzy.lnk");
+
+                var exePath = Application.ExecutablePath;
+                var workingDir = Path.GetDirectoryName(exePath) ?? AppContext.BaseDirectory;
+
+                // Use PowerShell to create the shortcut
+                var psScript = $"""
+                    $WshShell = New-Object -ComObject WScript.Shell
+                    $Shortcut = $WshShell.CreateShortcut('{shortcutPath}')
+                    $Shortcut.TargetPath = '{exePath}'
+                    $Shortcut.WorkingDirectory = '{workingDir}'
+                    $Shortcut.IconLocation = '{exePath},0'
+                    $Shortcut.Description = 'Fizzy Application'
+                    $Shortcut.Save()
+                    """;
+
+                var process = new System.Diagnostics.Process
+                {
+                    StartInfo = new System.Diagnostics.ProcessStartInfo
+                    {
+                        FileName = "powershell",
+                        Arguments = $"-NoProfile -Command \"{psScript.Replace("\"", "\\\"")}\"",
+                        UseShellExecute = false,
+                        CreateNoWindow = true
+                    }
+                };
+                process.Start();
+                process.WaitForExit();
+
+                if (process.ExitCode == 0)
+                {
+                    MessageBox.Show(
+                        this,
+                        "Fizzy has been added to your Start Menu.",
+                        "Success",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show(
+                        this,
+                        "Failed to create Start Menu shortcut.",
+                        "Error",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    this,
+                    $"Failed to add to programs: {ex.Message}",
+                    "Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+        }
     }
 }

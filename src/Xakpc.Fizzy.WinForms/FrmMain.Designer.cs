@@ -31,14 +31,16 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmMain));
             menuStrip1 = new MenuStrip();
             fileToolStripMenuItem = new ToolStripMenuItem();
+            addToProgramsToolStripMenuItem = new ToolStripMenuItem();
             containerToolStripMenuItem = new ToolStripMenuItem();
             startToolStripMenuItem = new ToolStripMenuItem();
             stopToolStripMenuItem = new ToolStripMenuItem();
+            updateToolStripMenuItem = new ToolStripMenuItem();
             toolStripMenuItem1 = new ToolStripSeparator();
             exitToolStripMenuItem = new ToolStripMenuItem();
+            aboutToolStripMenuItem = new ToolStripMenuItem();
             webView = new Microsoft.Web.WebView2.WinForms.WebView2();
             pbLoading = new PictureBox();
-            updateToolStripMenuItem = new ToolStripMenuItem();
             menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)webView).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pbLoading).BeginInit();
@@ -47,7 +49,7 @@
             // menuStrip1
             // 
             menuStrip1.ImageScalingSize = new Size(24, 24);
-            menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem });
+            menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, aboutToolStripMenuItem });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
             menuStrip1.Size = new Size(800, 33);
@@ -56,10 +58,17 @@
             // 
             // fileToolStripMenuItem
             // 
-            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { containerToolStripMenuItem, toolStripMenuItem1, exitToolStripMenuItem });
+            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { addToProgramsToolStripMenuItem, containerToolStripMenuItem, toolStripMenuItem1, exitToolStripMenuItem });
             fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             fileToolStripMenuItem.Size = new Size(54, 29);
             fileToolStripMenuItem.Text = "File";
+            // 
+            // addToProgramsToolStripMenuItem
+            // 
+            addToProgramsToolStripMenuItem.Name = "addToProgramsToolStripMenuItem";
+            addToProgramsToolStripMenuItem.Size = new Size(270, 34);
+            addToProgramsToolStripMenuItem.Text = "Add to Start";
+            addToProgramsToolStripMenuItem.Click += addToProgramsToolStripMenuItem_Click;
             // 
             // containerToolStripMenuItem
             // 
@@ -71,16 +80,23 @@
             // startToolStripMenuItem
             // 
             startToolStripMenuItem.Name = "startToolStripMenuItem";
-            startToolStripMenuItem.Size = new Size(270, 34);
+            startToolStripMenuItem.Size = new Size(184, 34);
             startToolStripMenuItem.Text = "Start";
             startToolStripMenuItem.Click += startToolStripMenuItem_Click;
             // 
             // stopToolStripMenuItem
             // 
             stopToolStripMenuItem.Name = "stopToolStripMenuItem";
-            stopToolStripMenuItem.Size = new Size(270, 34);
+            stopToolStripMenuItem.Size = new Size(184, 34);
             stopToolStripMenuItem.Text = "Stop";
             stopToolStripMenuItem.Click += stopToolStripMenuItem_Click;
+            // 
+            // updateToolStripMenuItem
+            // 
+            updateToolStripMenuItem.Name = "updateToolStripMenuItem";
+            updateToolStripMenuItem.Size = new Size(184, 34);
+            updateToolStripMenuItem.Text = "Update...";
+            updateToolStripMenuItem.Click += updateToolStripMenuItem_Click;
             // 
             // toolStripMenuItem1
             // 
@@ -93,6 +109,13 @@
             exitToolStripMenuItem.Size = new Size(270, 34);
             exitToolStripMenuItem.Text = "Exit";
             exitToolStripMenuItem.Click += exitToolStripMenuItem_Click;
+            // 
+            // aboutToolStripMenuItem
+            // 
+            aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
+            aboutToolStripMenuItem.Size = new Size(78, 29);
+            aboutToolStripMenuItem.Text = "About";
+            aboutToolStripMenuItem.Click += aboutToolStripMenuItem_Click;
             // 
             // webView
             // 
@@ -117,13 +140,6 @@
             pbLoading.SizeMode = PictureBoxSizeMode.CenterImage;
             pbLoading.TabIndex = 2;
             pbLoading.TabStop = false;
-            // 
-            // updateToolStripMenuItem
-            // 
-            updateToolStripMenuItem.Name = "updateToolStripMenuItem";
-            updateToolStripMenuItem.Size = new Size(270, 34);
-            updateToolStripMenuItem.Text = "Update...";
-            updateToolStripMenuItem.Click += updateToolStripMenuItem_Click;
             // 
             // FrmMain
             // 
@@ -157,5 +173,7 @@
         private ToolStripSeparator toolStripMenuItem1;
         private PictureBox pbLoading;
         private ToolStripMenuItem updateToolStripMenuItem;
+        private ToolStripMenuItem aboutToolStripMenuItem;
+        private ToolStripMenuItem addToProgramsToolStripMenuItem;
     }
 }

@@ -184,5 +184,33 @@ namespace Xakpc.Fizzy.WinForms
             process.Start();
             process.WaitForExit();
         }
+
+        public static string GetImageVersion()
+        {
+            try
+            {
+                // Get the short image ID (first 12 chars of the digest)
+                var process = new Process
+                {
+                    StartInfo = new ProcessStartInfo
+                    {
+                        FileName = "docker",
+                        Arguments = $"images {ImageName} --format \"{{{{.ID}}}}\"",
+                        RedirectStandardOutput = true,
+                        UseShellExecute = false,
+                        CreateNoWindow = true
+                    }
+                };
+                process.Start();
+                var imageId = process.StandardOutput.ReadToEnd().Trim();
+                process.WaitForExit();
+
+                return string.IsNullOrWhiteSpace(imageId) ? "unknown" : imageId;
+            }
+            catch
+            {
+                return "unknown";
+            }
+        }
     }
 }
