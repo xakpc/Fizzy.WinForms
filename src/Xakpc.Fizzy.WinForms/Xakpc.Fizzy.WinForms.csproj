@@ -7,6 +7,19 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
     <ApplicationIcon>..\..\assets\logo.ico</ApplicationIcon>
+
+    <!-- Assembly metadata -->
+    <Version>1.0.0</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <Product>Fizzy</Product>
+    <AssemblyTitle>Fizzy</AssemblyTitle>
+    <Description>A Windows Forms wrapper for the Fizzy Docker container</Description>
+    <Company>XAKPC Dev Labs</Company>
+    <Copyright>Copyright © 2025 XAKPC Dev Labs</Copyright>
+    <PackageProjectUrl>https://github.com/xakpc/Fizzy.WinForms</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/xakpc/Fizzy.WinForms</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,13 +29,25 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3595.46" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3595.46">
+      <ExcludeAssets>ContentFiles</ExcludeAssets>
+    </PackageReference>
   </ItemGroup>
+
+  <!-- Exclude WPF assemblies - not needed for WinForms -->
+  <ItemGroup>
+    <TrimmerRootAssembly Remove="Microsoft.Web.WebView2.Wpf" />
+  </ItemGroup>
+  <Target Name="RemoveWpfAssemblies" AfterTargets="ResolveAssemblyReferences">
+    <ItemGroup>
+      <ReferenceCopyLocalPaths Remove="@(ReferenceCopyLocalPaths)" Condition="'%(Filename)' == 'Microsoft.Web.WebView2.Wpf'" />
+    </ItemGroup>
+  </Target>
 
 	<PropertyGroup>
 		<NoWarn>$(NoWarn);MSB3277</NoWarn>
 	</PropertyGroup>
-	
+
   <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>

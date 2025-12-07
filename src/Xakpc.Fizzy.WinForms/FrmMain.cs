@@ -2,8 +2,15 @@ namespace Xakpc.Fizzy.WinForms
 {
     public partial class FrmMain : Form
     {
+        private static readonly string DataPath = Path.Combine(AppContext.BaseDirectory, "data");
+
         public FrmMain()
         {
+            // Set WebView2 user data folder before InitializeComponent
+            var webViewDataPath = Path.Combine(DataPath, "WebView2");
+            Directory.CreateDirectory(webViewDataPath);
+            Environment.SetEnvironmentVariable("WEBVIEW2_USER_DATA_FOLDER", webViewDataPath);
+
             InitializeComponent();
 
             WindowState = FormWindowState.Maximized;
@@ -38,10 +45,28 @@ namespace Xakpc.Fizzy.WinForms
         {
             pbLoading.Visible = true;
             await DockerHelper.StartContainerAsync();
+
+            // Configure WebView2 settings after CoreWebView2 is ready
+            await webView.EnsureCoreWebView2Async();
+            ConfigureWebView();
+
             webView.Source = new Uri("http://localhost:9461");
             startToolStripMenuItem.Enabled = false;
             stopToolStripMenuItem.Enabled = true;
             pbLoading.Visible = false;
+        }
+
+        private void ConfigureWebView()
+        {
+            var settings = webView.CoreWebView2.Settings;
+
+            // Disable developer tools (F12)
+            settings.AreDevToolsEnabled = false;
+
+            // Disable rest of the stuff
+            settings.IsStatusBarEnabled = false;
+            settings.IsZoomControlEnabled = false;
+            settings.IsSwipeNavigationEnabled = false;
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
