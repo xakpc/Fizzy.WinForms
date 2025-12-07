@@ -29,6 +29,8 @@ The application will automatically:
 - Create a `data/` directory for persistent storage
 - Start the container and load the web interface
 
+> **Note:** The first launch will download the Docker image (~500MB), which may take several minutes depending on your internet connection. Subsequent launches will be much faster.
+
 ## Usage
 
 ### Menu Options
