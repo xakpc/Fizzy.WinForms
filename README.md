@@ -2,6 +2,8 @@
 
 A Windows Forms desktop application that wraps a Docker-containerized Rails application, providing a native desktop experience for the Fizzy web application.
 
+<img width="802" height="636" alt="image" src="https://github.com/user-attachments/assets/97968268-c8d3-49b2-85b9-600c473710b1" />
+
 ## Overview
 
 Fizzy WinForms serves as a client wrapper around a Docker container running a Rails backend. It provides:
