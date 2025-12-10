@@ -31,25 +31,31 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmMain));
             menuStrip1 = new MenuStrip();
             fileToolStripMenuItem = new ToolStripMenuItem();
-            addToProgramsToolStripMenuItem = new ToolStripMenuItem();
+            refreshToolStripMenuItem = new ToolStripMenuItem();
             containerToolStripMenuItem = new ToolStripMenuItem();
             startToolStripMenuItem = new ToolStripMenuItem();
             stopToolStripMenuItem = new ToolStripMenuItem();
             updateToolStripMenuItem = new ToolStripMenuItem();
             toolStripMenuItem1 = new ToolStripSeparator();
             exitToolStripMenuItem = new ToolStripMenuItem();
+            helpToolStripMenuItem = new ToolStripMenuItem();
+            addToStartToolStripMenuItem = new ToolStripMenuItem();
+            toolStripMenuItem2 = new ToolStripSeparator();
             aboutToolStripMenuItem = new ToolStripMenuItem();
             webView = new Microsoft.Web.WebView2.WinForms.WebView2();
             pbLoading = new PictureBox();
+            statusStrip = new StatusStrip();
+            toolStripStatusLabel = new ToolStripStatusLabel();
             menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)webView).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pbLoading).BeginInit();
+            statusStrip.SuspendLayout();
             SuspendLayout();
             // 
             // menuStrip1
             // 
             menuStrip1.ImageScalingSize = new Size(24, 24);
-            menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, aboutToolStripMenuItem });
+            menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, helpToolStripMenuItem });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
             menuStrip1.Size = new Size(800, 33);
@@ -58,23 +64,23 @@
             // 
             // fileToolStripMenuItem
             // 
-            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { addToProgramsToolStripMenuItem, containerToolStripMenuItem, toolStripMenuItem1, exitToolStripMenuItem });
+            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { refreshToolStripMenuItem, containerToolStripMenuItem, toolStripMenuItem1, exitToolStripMenuItem });
             fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             fileToolStripMenuItem.Size = new Size(54, 29);
             fileToolStripMenuItem.Text = "File";
             // 
-            // addToProgramsToolStripMenuItem
+            // refreshToolStripMenuItem
             // 
-            addToProgramsToolStripMenuItem.Name = "addToProgramsToolStripMenuItem";
-            addToProgramsToolStripMenuItem.Size = new Size(270, 34);
-            addToProgramsToolStripMenuItem.Text = "Add to Start";
-            addToProgramsToolStripMenuItem.Click += addToProgramsToolStripMenuItem_Click;
+            refreshToolStripMenuItem.Name = "refreshToolStripMenuItem";
+            refreshToolStripMenuItem.Size = new Size(190, 34);
+            refreshToolStripMenuItem.Text = "Refresh";
+            refreshToolStripMenuItem.Click += refreshToolStripMenuItem_Click;
             // 
             // containerToolStripMenuItem
             // 
             containerToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { startToolStripMenuItem, stopToolStripMenuItem, updateToolStripMenuItem });
             containerToolStripMenuItem.Name = "containerToolStripMenuItem";
-            containerToolStripMenuItem.Size = new Size(270, 34);
+            containerToolStripMenuItem.Size = new Size(190, 34);
             containerToolStripMenuItem.Text = "Container";
             // 
             // startToolStripMenuItem
@@ -101,21 +107,40 @@
             // toolStripMenuItem1
             // 
             toolStripMenuItem1.Name = "toolStripMenuItem1";
-            toolStripMenuItem1.Size = new Size(267, 6);
+            toolStripMenuItem1.Size = new Size(187, 6);
             // 
             // exitToolStripMenuItem
             // 
             exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            exitToolStripMenuItem.Size = new Size(270, 34);
+            exitToolStripMenuItem.Size = new Size(190, 34);
             exitToolStripMenuItem.Text = "Exit";
             exitToolStripMenuItem.Click += exitToolStripMenuItem_Click;
+            // 
+            // helpToolStripMenuItem
+            // 
+            helpToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { addToStartToolStripMenuItem, toolStripMenuItem2, aboutToolStripMenuItem });
+            helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            helpToolStripMenuItem.Size = new Size(65, 29);
+            helpToolStripMenuItem.Text = "Help";
+            // 
+            // addToStartToolStripMenuItem
+            // 
+            addToStartToolStripMenuItem.Name = "addToStartToolStripMenuItem";
+            addToStartToolStripMenuItem.Size = new Size(212, 34);
+            addToStartToolStripMenuItem.Text = "Add To Start";
+            addToStartToolStripMenuItem.Click += addToStartToolStripMenuItem_Click;
+            // 
+            // toolStripMenuItem2
+            // 
+            toolStripMenuItem2.Name = "toolStripMenuItem2";
+            toolStripMenuItem2.Size = new Size(209, 6);
             // 
             // aboutToolStripMenuItem
             // 
             aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            aboutToolStripMenuItem.Size = new Size(78, 29);
+            aboutToolStripMenuItem.Size = new Size(212, 34);
             aboutToolStripMenuItem.Text = "About";
-            aboutToolStripMenuItem.Click += aboutToolStripMenuItem_Click;
+            aboutToolStripMenuItem.Click += aboutToolStripMenuItem1_Click;
             // 
             // webView
             // 
@@ -125,7 +150,7 @@
             webView.Dock = DockStyle.Fill;
             webView.Location = new Point(0, 33);
             webView.Name = "webView";
-            webView.Size = new Size(800, 417);
+            webView.Size = new Size(800, 389);
             webView.TabIndex = 1;
             webView.ZoomFactor = 1D;
             // 
@@ -136,10 +161,27 @@
             pbLoading.Image = (Image)resources.GetObject("pbLoading.Image");
             pbLoading.Location = new Point(0, 33);
             pbLoading.Name = "pbLoading";
-            pbLoading.Size = new Size(800, 417);
+            pbLoading.Size = new Size(800, 389);
             pbLoading.SizeMode = PictureBoxSizeMode.CenterImage;
             pbLoading.TabIndex = 2;
             pbLoading.TabStop = false;
+            // 
+            // statusStrip
+            //
+            statusStrip.ImageScalingSize = new Size(24, 24);
+            statusStrip.Items.AddRange(new ToolStripItem[] { toolStripStatusLabel });
+            statusStrip.Location = new Point(0, 422);
+            statusStrip.MinimumSize = new Size(0, 28);
+            statusStrip.Name = "statusStrip";
+            statusStrip.Size = new Size(800, 28);
+            statusStrip.TabIndex = 3;
+            statusStrip.Text = "statusStrip1";
+            statusStrip.Visible = false;
+            // 
+            // toolStripStatusLabel
+            // 
+            toolStripStatusLabel.Name = "toolStripStatusLabel";
+            toolStripStatusLabel.Size = new Size(0, 21);
             // 
             // FrmMain
             // 
@@ -148,6 +190,7 @@
             ClientSize = new Size(800, 450);
             Controls.Add(pbLoading);
             Controls.Add(webView);
+            Controls.Add(statusStrip);
             Controls.Add(menuStrip1);
             Icon = (Icon)resources.GetObject("$this.Icon");
             MainMenuStrip = menuStrip1;
@@ -157,6 +200,8 @@
             menuStrip1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)webView).EndInit();
             ((System.ComponentModel.ISupportInitialize)pbLoading).EndInit();
+            statusStrip.ResumeLayout(false);
+            statusStrip.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -173,7 +218,12 @@
         private ToolStripSeparator toolStripMenuItem1;
         private PictureBox pbLoading;
         private ToolStripMenuItem updateToolStripMenuItem;
+        private ToolStripMenuItem helpToolStripMenuItem;
+        private ToolStripMenuItem refreshToolStripMenuItem;
+        private ToolStripMenuItem addToStartToolStripMenuItem;
+        private ToolStripSeparator toolStripMenuItem2;
         private ToolStripMenuItem aboutToolStripMenuItem;
-        private ToolStripMenuItem addToProgramsToolStripMenuItem;
+        private StatusStrip statusStrip;
+        private ToolStripStatusLabel toolStripStatusLabel;
     }
 }

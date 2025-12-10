@@ -10,12 +10,13 @@ namespace Xakpc.Fizzy.WinForms
         private const string HealthCheckUrl = "http://localhost:9461";
         private const int MaxRetries = 30;
         private const int RetryDelayMs = 500;
-        private static readonly string DataPath = Path.Combine(AppContext.BaseDirectory, "data");
+        private static readonly string DataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Fizzy");
 
-        public static async Task StartContainerAsync()
+        public static async Task StartContainerAsync(Action<string>? statusCallback = null)
         {
             try
             {
+                statusCallback?.Invoke("Checking container status...");
                 var output = await RunCommandAsync($"ps -q -f name={ContainerName}");
 
                 if (string.IsNullOrWhiteSpace(output))
@@ -24,10 +25,12 @@ namespace Xakpc.Fizzy.WinForms
 
                     if (!string.IsNullOrWhiteSpace(stoppedOutput))
                     {
+                        statusCallback?.Invoke("Starting container...");
                         await RunCommandAsync($"start {ContainerName}");
                     }
                     else
                     {
+                        statusCallback?.Invoke("Creating container (first launch)...");
                         Directory.CreateDirectory(DataPath);
                         await RunCommandAsync($"run -d -p 9461:80 -v \"{DataPath}:/rails/storage\" -e SECRET_KEY_BASE=a9f8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b9c8d7e6f5a4b3c2d1e0f9a8 --name {ContainerName} {ImageName}");
                     }
@@ -38,11 +41,12 @@ namespace Xakpc.Fizzy.WinForms
                     var pausedOutput = await RunCommandAsync($"ps -q -f name={ContainerName} -f status=paused");
                     if (!string.IsNullOrWhiteSpace(pausedOutput))
                     {
+                        statusCallback?.Invoke("Resuming container...");
                         await RunCommandAsync($"unpause {ContainerName}");
                     }
                 }
 
-                await WaitForContainerReadyAsync();
+                await WaitForContainerReadyAsync(statusCallback);
             }
             catch (Exception ex)
             {
@@ -51,8 +55,9 @@ namespace Xakpc.Fizzy.WinForms
             }
         }
 
-        private static async Task WaitForContainerReadyAsync()
+        private static async Task WaitForContainerReadyAsync(Action<string>? statusCallback = null)
         {
+            statusCallback?.Invoke("Waiting for container to be ready...");
             using var client = new HttpClient { Timeout = TimeSpan.FromSeconds(2) };
 
             for (int i = 0; i < MaxRetries; i++)
@@ -62,12 +67,17 @@ namespace Xakpc.Fizzy.WinForms
                     var response = await client.GetAsync(HealthCheckUrl);
                     if (response.IsSuccessStatusCode)
                     {
+                        statusCallback?.Invoke("Container ready!");
                         return;
                     }
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine($"[DockerHelper] Health check attempt {i + 1}/{MaxRetries} failed: {ex.Message}");
+                    if (i == 5)
+                    {
+                        statusCallback?.Invoke("Loading model... This may take a while on first launch.");
+                    }
                 }
 
                 await Task.Delay(RetryDelayMs);

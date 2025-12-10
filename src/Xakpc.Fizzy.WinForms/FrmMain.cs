@@ -2,7 +2,7 @@ namespace Xakpc.Fizzy.WinForms
 {
     public partial class FrmMain : Form
     {
-        private static readonly string DataPath = Path.Combine(AppContext.BaseDirectory, "data");
+        private static readonly string DataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Fizzy");
 
         public FrmMain()
         {
@@ -26,6 +26,7 @@ namespace Xakpc.Fizzy.WinForms
 
         private async void FrmMain_Load(object? sender, EventArgs e)
         {
+            UpdateStatus("Checking Docker...");
             if (!await DockerHelper.IsDockerAvailableAsync())
             {
                 MessageBox.Show(
@@ -44,9 +45,12 @@ namespace Xakpc.Fizzy.WinForms
         private async Task StartContainerAsync()
         {
             pbLoading.Visible = true;
-            await DockerHelper.StartContainerAsync();
+            statusStrip.Visible = true;
+
+            await DockerHelper.StartContainerAsync(UpdateStatus);
 
             // Configure WebView2 settings after CoreWebView2 is ready
+            UpdateStatus("Initializing browser...");
             await webView.EnsureCoreWebView2Async();
             ConfigureWebView();
 
@@ -54,6 +58,16 @@ namespace Xakpc.Fizzy.WinForms
             startToolStripMenuItem.Enabled = false;
             stopToolStripMenuItem.Enabled = true;
             pbLoading.Visible = false;
+
+            // Hide status strip after a short delay
+            await Task.Delay(300);
+            statusStrip.Visible = false;
+        }
+
+        private void UpdateStatus(string message)
+        {
+            toolStripStatusLabel.Text = message;
+            statusStrip.Refresh();
         }
 
         private void ConfigureWebView()
@@ -81,46 +95,24 @@ namespace Xakpc.Fizzy.WinForms
 
         private void stopToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            statusStrip.Visible = true;
+            UpdateStatus("Stopping container...");
             DockerHelper.StopContainer();
             startToolStripMenuItem.Enabled = true;
             stopToolStripMenuItem.Enabled = false;
+            UpdateStatus("Container stopped");
+            Task.Delay(1000).ContinueWith(_ => BeginInvoke(() => statusStrip.Visible = false));
         }
 
         private async void updateToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            statusStrip.Visible = true;
+            UpdateStatus("Updating container...");
             DockerHelper.UpdateContainer();
             await StartContainerAsync();
         }
 
-        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-            var dockerVersion = DockerHelper.GetImageVersion();
-            var aboutText = $"""
-                Fizzy WinForms v{version?.ToString(3) ?? "1.0.0"}
-
-                A Windows Forms wrapper for the Fizzy Docker container.
-
-                Docker Image: ghcr.io/xakpc/fizzy-win-local
-                Docker Version: {dockerVersion}
-
-                Links:
-                • GitHub: github.com/xakpc/Fizzy.WinForms
-                • Docker Image: github.com/xakpc/fizzy-win-local
-
-                Author: Pavel Osadchuk
-                License: MIT
-                """;
-
-            MessageBox.Show(
-                this,
-                aboutText,
-                "About Fizzy",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information);
-        }
-
-        private void addToProgramsToolStripMenuItem_Click(object sender, EventArgs e)
+        private void addToStartToolStripMenuItem_Click(object sender, EventArgs e)
         {
             try
             {
@@ -183,6 +175,41 @@ namespace Xakpc.Fizzy.WinForms
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
+        }
+
+        private void aboutToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+            var dockerVersion = DockerHelper.GetImageVersion();
+            var aboutText = $"""
+                Fizzy WinForms v{version?.ToString(3) ?? "1.0.0"}
+
+                A Windows Forms wrapper for the Fizzy Docker container.
+
+                Docker Image: ghcr.io/xakpc/fizzy-win-local
+                Docker Version: {dockerVersion}
+
+                Data Folder: {DataPath}
+
+                Links:
+                • GitHub: github.com/xakpc/Fizzy.WinForms
+                • Docker Image: github.com/xakpc/fizzy-win-local
+
+                Author: Pavel Osadchuk
+                License: MIT
+                """;
+
+            MessageBox.Show(
+                this,
+                aboutText,
+                "About Fizzy",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
+        }
+
+        private void refreshToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            webView.Source = new Uri("http://localhost:9461");
         }
     }
 }
