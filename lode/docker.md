@@ -15,10 +15,12 @@ The WinForms app manages a Docker container running a Rails application (Fizzy).
 
 SQLite database is persisted using a volume mount:
 
-- **Host Path**: `<exe location>/data/`
+- **Host Path**: `%LOCALAPPDATA%\Fizzy` (e.g., `C:\Users\{username}\AppData\Local\Fizzy`)
 - **Container Path**: `/rails/storage`
 
-The Rails app stores its SQLite database at `/rails/storage/production.sqlite3`. By mounting the `data` folder from the host, the database survives container recreation during updates.
+The Rails app stores its SQLite database at `/rails/storage/production.sqlite3`. By mounting the data folder from the user's AppData directory, the database survives container recreation during updates and avoids permission issues when the app is installed in Program Files.
+
+**Note**: Previously stored in `<exe location>/data/`, moved to LocalApplicationData in v1.0.1 to resolve multi-user access rights issues.
 
 ## Container Lifecycle
 
@@ -29,8 +31,16 @@ The Rails app stores its SQLite database at `/rails/storage/production.sqlite3`.
 4. If doesn't exist, create with volume mount
 5. Wait for health check at `http://localhost:9461`
 
+Status updates are shown in the status strip during startup:
+- "Checking container status..."
+- "Creating container (first launch)..." / "Starting container..." / "Resuming container..."
+- "Waiting for container to be ready..."
+- "Loading model... This may take a while on first launch." (after 2.5s)
+- "Container ready!"
+- "Initializing browser..."
+
 ### Stop
-Stops the container gracefully via `docker stop`
+Stops the container gracefully via `docker stop`. Shows "Stopping container..." status message.
 
 ### Pause/Unpause
 Used when app closes/reopens to preserve container state without full restart
@@ -42,9 +52,14 @@ Used when app closes/reopens to preserve container state without full restart
 4. Create new container with same volume mount
 5. Reload webview
 
+Shows "Updating container..." status during the process.
+
 ## Key Implementation Details
 
 - Update runs in a visible `cmd` window (`/k` flag) so user can see progress
 - `WaitForExit()` ensures update completes before reloading UI
 - Volume mount preserves data across updates
 - Data folder is created automatically if missing
+- Status strip shows progress during operations and auto-hides when complete
+- About dialog displays the full data folder path for user reference
+- Status callback pattern allows `DockerHelper` to report progress to UI
