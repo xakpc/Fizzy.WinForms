@@ -7,6 +7,7 @@ namespace Xakpc.Fizzy.WinForms
     {
         private const string ContainerName = "fizzy";
         private const string ImageName = "ghcr.io/xakpc/fizzy-win-local";
+        //private const string ImageName = "fizzy-local"; for testing
         private const string HealthCheckUrl = "http://localhost:9461";
         private const int MaxRetries = 30;
         private const int RetryDelayMs = 500;
@@ -31,8 +32,12 @@ namespace Xakpc.Fizzy.WinForms
                     else
                     {
                         statusCallback?.Invoke("Creating container (first launch)...");
-                        Directory.CreateDirectory(DataPath);
-                        await RunCommandAsync($"run -d -p 9461:80 -v \"{DataPath}:/rails/storage\" -e SECRET_KEY_BASE=a9f8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b9c8d7e6f5a4b3c2d1e0f9a8 --name {ContainerName} {ImageName}");
+                        Directory.CreateDirectory(DataPath);                        
+                        await RunCommandAsync($"run -d -p 9461:80 -v \"{DataPath}:/rails/storage\"  " +
+                            //$"-e SOLID_QUEUE_IN_PUMA=1 " + // not sure if needed, would make it optional
+                            $"-e WEB_CONCURRENCY=0 " + // single-threaded because 1 user
+                            $"-e SECRET_KEY_BASE=a9f8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b9c8d7e6f5a4b3c2d1e0f9a8 " +
+                            $"--name {ContainerName} {ImageName}");
                     }
                 }
                 else
